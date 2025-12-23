@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Open Budget | Master Your Money">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+    
+    {/* --- HERO SECTION --- */}
+    <div class="text-center space-y-6 max-w-3xl mx-auto mb-16 md:mb-20">
+      <div class="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-indigo-100">
+        v1.0 • Personal Finance OS
+      </div>
+      <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        Stop wondering where <br class="hidden md:block" />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">your money went.</span>
+      </h1>
+      <p class="text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto">
+        A privacy-focused suite to calculate your true salary, automate your budget, destroy debt, and build wealth. Your data stays on your device.
+      </p>
+    </div>
+
+    {/* --- TOOLS GRID --- */}
+    <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+      
+      {/* 1. Salary Architect */}
+      <a href="/salary" class="group relative bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        {/* Background Icon Watermark */}
+        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+          <svg class="w-48 h-48 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.29 0 2.13-.73 2.13-1.65 0-1.21-.99-1.38-3.46-1.97-2.93-.7-4.11-1.75-4.11-3.7 0-1.9 1.48-3.21 3.23-3.56V4h2.67v1.88c1.61.35 2.82 1.48 2.89 3.09h-1.98c-.1-1.1-1.07-1.74-2.18-1.74-1.29 0-1.95.83-1.95 1.57 0 1.25 1.05 1.46 3.65 2.05 2.76.63 3.92 1.83 3.92 3.65 0 1.83-1.35 3.19-3.23 3.55z"/></svg>
+        </div>
+        
+        <div class="relative z-10">
+          <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 border border-indigo-100">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-indigo-600 transition-colors">Salary Architect</h3>
+          <p class="text-slate-500 mb-8 leading-relaxed">
+            Analyze your offer with country-specific taxes or reverse-engineer your salary negotiation. Know your real In-Hand number.
+          </p>
+          <span class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+            Calculate Now <span>&rarr;</span>
+          </span>
+        </div>
+      </a>
+
+      {/* 2. Budget Allocator */}
+      <a href="/csp" class="group relative bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+           <svg class="w-48 h-48 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+        </div>
+        <div class="relative z-10">
+          <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 border border-purple-100">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-purple-600 transition-colors">Budget Allocator</h3>
+          <p class="text-slate-500 mb-8 leading-relaxed">
+            Give every dollar a job. Choose between frameworks like the Conscious Spending Plan, 50/30/20, or the 6 Jars system.
+          </p>
+          <span class="text-purple-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+            Start Budgeting <span>&rarr;</span>
+          </span>
+        </div>
+      </a>
+
+      {/* 3. Wealth Builder */}
+      <a href="/wealth" class="group relative bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+           <svg class="w-48 h-48 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+        </div>
+        <div class="relative z-10">
+          <div class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 border border-green-100">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-green-600 transition-colors">Wealth Builder</h3>
+          <p class="text-slate-500 mb-8 leading-relaxed">
+            Clear the past by destroying debt with the Snowball method, and predict your future with the Compound Interest simulator.
+          </p>
+          <span class="text-green-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+            Simulate Wealth <span>&rarr;</span>
+          </span>
+        </div>
+      </a>
+
+      {/* 4. The Vault */}
+      <a href="/scripts" class="group relative bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+           <svg class="w-48 h-48 text-slate-600" fill="currentColor" viewBox="0 0 24 24"><path d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/></svg>
+        </div>
+        <div class="relative z-10">
+          <div class="w-14 h-14 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center mb-6 border border-slate-200">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-slate-800 mb-3 group-hover:text-slate-600 transition-colors">The Vault</h3>
+          <p class="text-slate-500 mb-8 leading-relaxed">
+            Don't know what to say? Access battle-tested scripts for negotiating salaries, lowering rent, and removing bank fees.
+          </p>
+          <span class="text-slate-600 font-bold flex items-center gap-2 group-hover:gap-3 transition-all">
+            Open Library <span>&rarr;</span>
+          </span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</Layout>

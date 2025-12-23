@@ -1,0 +1,36 @@
+/* src/styles/global.css */
+@import "tailwindcss";
+
+@layer base {
+  /* Apply the fonts we loaded */
+  :root {
+    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em; /* Tighter tracking for headings looks modern */
+  }
+}
+
+@layer utilities {
+  /* A nice card effect with a subtle lift on hover */
+  .card-premium {
+    @apply bg-white border border-slate-200 rounded-xl shadow-sm transition-all duration-200 ease-in-out;
+  }
+  
+  .card-premium:hover {
+    @apply shadow-md border-indigo-100 -translate-y-0.5;
+  }
+
+  /* Clean Input Fields */
+  .input-modern {
+    @apply w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 
+    outline-none ring-offset-2 transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500;
+  }
+}

@@ -1,0 +1,8 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BudgetApp from '../modules/csp/BudgetApp';
+---
+
+<Layout title="CSP Calculator">
+  <BudgetApp client:only="react" /> 
+</Layout>
