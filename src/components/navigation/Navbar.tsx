@@ -1,13 +1,14 @@
 import React from 'react';
 
 export default function Navbar({ currentPath }: { currentPath: string }) {
-  const links = [
-    { name: 'Dashboard', href: '/' },
-    { name: 'Salary', href: '/salary' },
-    { name: 'Budget', href: '/csp' },
-    { name: 'Wealth', href: '/wealth' },
-    { name: 'Vault', href: '/scripts' },
-  ];
+const links = [
+  { name: 'Dashboard', href: '/' },
+  { name: 'Guide', href: '/guide' }, // <-- ADD THIS
+  { name: 'Salary', href: '/salary' },
+  { name: 'Budget', href: '/csp' },
+  { name: 'Wealth', href: '/wealth' },
+  { name: 'Vault', href: '/scripts' },
+];
 
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">

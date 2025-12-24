@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GuideView from '../modules/guide/GuideView';
+---
+
+<Layout title="The Manual | Open Budget">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+     <GuideView client:only="react" />
+  </div>
+</Layout>

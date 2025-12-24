@@ -1,68 +1,92 @@
 import { useState, useEffect } from 'react';
+import { create } from 'zustand';
 
-// Define the Global Data Shape
+// --- TYPES ---
 export type FinancialData = {
+  // Salary
+  ctc: number;
+  income: number;
   currency: string;
-  income: number; // Monthly In-Hand
-  ctc: number;    // Annual Gross (for Salary module)
   
-  // CSP Data
+  // Budget (CSP)
   budget: Record<string, any[]>;
   
-  // Wealth Data
+  // Wealth
   assets: {
     emergencyFund: number;
     investments: number;
     goals: any[];
   };
-  debts: any[]; // For Debt Destroyer
+  debts: any[];
+
+  // Guide (Rich Life Vision) -- NEW
+  richLife?: {
+    love: string;
+    hate: string;
+    statement: string;
+  };
 };
 
+// --- DEFAULTS ---
 const DEFAULT_DATA: FinancialData = {
-  currency: '$',
-  income: 0,
   ctc: 0,
+  income: 0,
+  currency: '$',
   budget: {
-    fixed: [{ id: 'def-1', name: "Accommodation (Rent/Mortgage)", amount: 0 }],
-    invest: [{ id: 'def-2', name: "Index Funds / 401k", amount: 0 }],
-    savings: [{ id: 'def-3', name: "Emergency Fund Contribution", amount: 0 }],
-    guiltFree: [{ id: 'def-4', name: "Dining Out / Social", amount: 0 }]
+    fixed: [],
+    invest: [],
+    savings: [],
+    guiltFree: []
   },
-  assets: { emergencyFund: 0, investments: 0, goals: [] },
-  debts: []
+  assets: {
+    emergencyFund: 0,
+    investments: 0,
+    goals: []
+  },
+  debts: [],
+  richLife: { love: '', hate: '', statement: '' } // Default empty state
 };
 
-// The Custom Hook
-export function useFinancialData() {
-  const [data, setData] = useState<FinancialData>(DEFAULT_DATA);
-  const [loaded, setLoaded] = useState(false);
+// --- STORE ---
+type Store = {
+  data: FinancialData;
+  loaded: boolean;
+  update: (partial: Partial<FinancialData>) => void;
+};
 
-  // Load on mount
+export const useStore = create<Store>((set) => ({
+  data: DEFAULT_DATA,
+  loaded: false,
+  update: (partial) => set((state) => ({ data: { ...state.data, ...partial } })),
+}));
+
+// --- PERSISTENCE HOOK ---
+export const useFinancialData = () => {
+  const { data, loaded, update } = useStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load from LocalStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('open-budget-data');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Merge with default to ensure new fields (like 'debts') exist if user has old data
-        setData({ ...DEFAULT_DATA, ...parsed });
+        // Merge saved data with defaults to ensure new fields (like richLife) exist
+        update({ ...DEFAULT_DATA, ...parsed });
       } catch (e) {
-        console.error("Failed to parse budget data");
+        console.error("Failed to load data", e);
       }
     }
-    setLoaded(true);
+    useStore.setState({ loaded: true });
+    setIsHydrated(true);
   }, []);
 
-  // Save on change
+  // Save to LocalStorage on change
   useEffect(() => {
-    if (loaded) {
+    if (loaded && isHydrated) {
       localStorage.setItem('open-budget-data', JSON.stringify(data));
     }
-  }, [data, loaded]);
+  }, [data, loaded, isHydrated]);
 
-  // Update Helper
-  const update = (partial: Partial<FinancialData>) => {
-    setData(prev => ({ ...prev, ...partial }));
-  };
-
-  return { data, update, loaded };
-}
+  return { data, update, loaded: isHydrated };
+};
