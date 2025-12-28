@@ -64,7 +64,7 @@ export default function BudgetApp() {
   const monthsToSafety = monthlySavingsTotal > 0 ? Math.ceil(safetyNetGap / monthlySavingsTotal) : 0;
   const isFullyFunded = (wealth?.emergencyFund || 0) >= targetSafetyNet && targetSafetyNet > 0;
 
-  // --- Actions (Update Store directly) ---
+  // --- Actions ---
   const updateStoreBuckets = (newBuckets: any) => {
     update({ budget: newBuckets });
   };
@@ -104,16 +104,16 @@ export default function BudgetApp() {
   };
 
   return (
-    <div className="grid lg:grid-cols-12 gap-8 items-start pb-20">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20 px-4 sm:px-6">
       
       {/* LEFT COLUMN: Inputs */}
-      <div className="lg:col-span-7 space-y-8">
+      <div className="lg:col-span-7 space-y-6 sm:space-y-8">
         
         {/* Header */}
         <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-slate-800">1. Monthly In-Flow</h2>
             <select 
-              className="text-sm bg-white border border-slate-200 rounded px-2 py-1 cursor-pointer" 
+              className="text-sm bg-white border border-slate-200 rounded px-2 py-1 cursor-pointer focus:outline-none focus:border-indigo-500" 
               onChange={(e) => update({ currency: e.target.value })} 
               value={currency}
             >
@@ -122,67 +122,77 @@ export default function BudgetApp() {
         </div>
 
         {/* Income */}
-        <div className="card-premium p-6 text-center bg-white rounded-2xl border border-slate-200">
+        <div className="card-premium p-6 text-center bg-white rounded-2xl border border-slate-200 shadow-sm">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Monthly Take-Home Salary</label>
-          <div className="flex justify-center items-center text-4xl font-bold text-slate-800 mt-2 relative">
-            <span className="text-slate-300 absolute left-[15%] sm:left-[25%] pointer-events-none">{currency}</span>
+          <div className="flex justify-center items-center text-3xl sm:text-4xl font-bold text-slate-800 mt-2 relative">
+            <span className="text-slate-300 mr-2">{currency}</span>
             <input 
               type="number" 
+              inputMode="decimal"
               placeholder="0" 
-              className="w-48 text-center border-b-2 border-indigo-100 focus:border-indigo-600 outline-none bg-transparent"
+              className="w-40 sm:w-48 text-center border-b-2 border-indigo-100 focus:border-indigo-600 outline-none bg-transparent"
               value={income || ''} 
               onChange={(e) => update({ income: parseFloat(e.target.value) })} 
             />
           </div>
         </div>
 
-        {/* Budget Buckets */}
+        {/* Budget Buckets [Image of Conscious Spending Plan buckets] */}
         <div className="space-y-4">
           {(Object.keys(CONFIG) as CategoryKey[]).map((key) => {
             const total = getSum(key);
             const isExpanded = expanded === key;
             const config = CONFIG[key];
             return (
-              <div key={key} className={`card-premium bg-white overflow-hidden border transition-all ${isExpanded ? 'ring-2 ring-indigo-500/20 shadow-md' : 'border-slate-200'}`}>
-                <div onClick={() => setExpanded(isExpanded ? null : key)} className="p-5 cursor-pointer flex justify-between items-center hover:bg-slate-50">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${config.color.replace('text-', 'bg-opacity-20 ')}`}>
+              <div key={key} className={`card-premium bg-white overflow-hidden border transition-all rounded-xl ${isExpanded ? 'ring-2 ring-indigo-500/20 shadow-md' : 'border-slate-200'}`}>
+                <div onClick={() => setExpanded(isExpanded ? null : key)} className="p-4 sm:p-5 cursor-pointer flex justify-between items-center hover:bg-slate-50 active:bg-slate-100 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${config.color.replace('text-', 'bg-opacity-20 ')}`}>
                        <div className={`w-3 h-3 rounded-full ${config.color.split(' ')[0].replace('bg-', 'bg-')}`}></div>
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-800 text-lg">{config.title}</h3>
+                      <h3 className="font-bold text-slate-800 text-base sm:text-lg">{config.title}</h3>
                       <p className="text-xs text-slate-500 hidden sm:block">{config.description}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-bold text-xl text-slate-800">{currency}{total.toLocaleString()}</div>
+                    <div className="font-mono font-bold text-lg sm:text-xl text-slate-800">{currency}{total.toLocaleString()}</div>
                     <div className="text-xs font-medium text-slate-400">Target: {config.target}</div>
                   </div>
                 </div>
                 
                 {isExpanded && (
-                  <div className="bg-slate-50 p-5 border-t border-slate-100 animate-in slide-in-from-top-2">
+                  <div className="bg-slate-50 p-4 sm:p-5 border-t border-slate-100 animate-in slide-in-from-top-2">
                     <div className="space-y-3">
                       {buckets[key]?.map((item: any) => (
-                        <div key={item.id} className="flex gap-3 items-center">
+                        <div key={item.id} className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-center bg-white sm:bg-transparent p-2 sm:p-0 rounded-lg border sm:border-none border-slate-100">
                           <input 
                             type="text" 
                             placeholder="Item Name" 
-                            className="input-modern flex-1 text-sm py-2"
+                            className="input-modern flex-1 text-sm py-2 bg-transparent outline-none font-medium text-slate-700"
                             value={item.name} 
                             onChange={(e) => updateItem(key, item.id, 'name', e.target.value)} 
                           />
-                          <div className="relative w-32">
-                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">{currency}</span>
-                             <input type="number" placeholder="0" className="input-modern w-full pl-8 text-sm py-2 text-right font-mono" value={item.amount || ''} onChange={(e) => updateItem(key, item.id, 'amount', parseFloat(e.target.value))} />
-                          </div>
-                          <div className="w-6 flex justify-center">
-                                <button onClick={() => deleteItem(key, item.id)} className="text-slate-400 hover:text-red-500 px-1">&times;</button>
+                          <div className="flex items-center justify-between sm:justify-end gap-2">
+                              <div className="relative w-full sm:w-32 bg-slate-50 sm:bg-white rounded-lg">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">{currency}</span>
+                                <input 
+                                  type="number" 
+                                  inputMode="decimal"
+                                  placeholder="0" 
+                                  className="input-modern w-full pl-8 text-sm py-2 text-right font-mono bg-transparent outline-none" 
+                                  value={item.amount || ''} 
+                                  onChange={(e) => updateItem(key, item.id, 'amount', parseFloat(e.target.value))} 
+                                />
+                              </div>
+                              <button onClick={() => deleteItem(key, item.id)} className="text-slate-300 hover:text-red-500 p-2 text-lg leading-none">&times;</button>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <button onClick={() => addItem(key)} className="mt-4 text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">+ Add New Item</button>
+                    <button onClick={() => addItem(key)} className="mt-4 text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 p-2 rounded hover:bg-indigo-50 transition-colors w-full sm:w-auto justify-center sm:justify-start">
+                        + Add New Item
+                    </button>
                   </div>
                 )}
               </div>
@@ -192,7 +202,7 @@ export default function BudgetApp() {
 
         {/* Status Bar */}
         {income > 0 && (
-          <div className={`p-5 rounded-xl border flex items-center justify-between transition-colors shadow-sm ${
+          <div className={`p-4 sm:p-5 rounded-xl border flex flex-col sm:flex-row items-center justify-between transition-colors shadow-sm gap-2 text-center sm:text-left ${
             unallocated < 0 ? 'bg-red-50 border-red-200 text-red-800' : 
             unallocated > 0 ? 'bg-slate-800 border-slate-700 text-white' : 
             'bg-green-50 border-green-200 text-green-800'
@@ -202,7 +212,7 @@ export default function BudgetApp() {
                 {unallocated < 0 ? "⚠️ Over Budget" : unallocated > 0 ? "Left to Allocate" : "🎉 Perfect Budget"}
               </h3>
             </div>
-            <div className="text-right">
+            <div>
                <span className="block text-2xl font-bold font-mono tracking-tight">
                  {unallocated < 0 ? '-' : ''}{currency}{Math.abs(unallocated).toLocaleString()}
                </span>
@@ -214,84 +224,119 @@ export default function BudgetApp() {
         <div className="pt-8 border-t border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-6">2. Net Worth & Goals</h2>
           
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
              {/* Emergency Fund */}
-             <div className="card-premium p-5 bg-white border border-slate-200 flex flex-col justify-between relative overflow-hidden">
+             <div className="card-premium p-5 bg-white border border-slate-200 rounded-xl flex flex-col justify-between relative overflow-hidden shadow-sm">
                 <div className="relative z-10">
                     <label className="font-bold text-slate-700 flex items-center gap-2">💊 Emergency Cash</label>
                     <p className="text-xs text-slate-400 mb-2">Money currently in bank</p>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">{currency}</span>
-                        <input type="number" className="input-modern pl-12 text-xl font-bold text-slate-800" placeholder="0"
-                            value={wealth.emergencyFund || ''} onChange={(e) => setWealthValue('emergencyFund', parseFloat(e.target.value))} />
+                        <span className="absolute left-1 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">{currency}</span>
+                        <input 
+                          type="number" 
+                          inputMode="decimal"
+                          className="input-modern w-full pl-10 py-2 border rounded-lg text-lg font-bold text-slate-800 outline-none focus:border-indigo-500" 
+                          placeholder="0"
+                          value={wealth.emergencyFund || ''} onChange={(e) => setWealthValue('emergencyFund', parseFloat(e.target.value))} 
+                        />
                     </div>
                 </div>
                 {monthlyFixedCosts > 0 && (
                   <div className="mt-4 pt-4 border-t border-slate-100 text-sm relative z-10">
-                     <div className="flex justify-between text-slate-500 mb-1 text-xs">
+                      <div className="flex justify-between text-slate-500 mb-1 text-xs">
                         <span>Target (6mo):</span>
                         <span className="font-mono">{currency}{targetSafetyNet.toLocaleString()}</span>
-                     </div>
-                     {isFullyFunded ? (
-                        <div className="text-green-600 font-bold bg-green-50 p-2 rounded text-center">✅ Fully Funded!</div>
-                     ) : (
+                      </div>
+                      {isFullyFunded ? (
+                        <div className="text-green-600 font-bold bg-green-50 p-2 rounded text-center text-xs">✅ Fully Funded!</div>
+                      ) : (
                         <div className="text-xs">
                             {monthlySavingsTotal > 0 ? (
                                 <div className="text-slate-600">
-                                    Safe in: <span className="font-bold text-indigo-600 text-lg">{monthsToSafety} mo</span>
+                                    Safe in: <span className="font-bold text-indigo-600 text-base">{monthsToSafety} mo</span>
                                 </div>
                             ) : (
-                                <span className="text-amber-600">Add to "Savings" to forecast.</span>
+                                <span className="text-amber-600 font-medium">Add to "Savings" to forecast.</span>
                             )}
                         </div>
-                     )}
+                      )}
                   </div>
                 )}
              </div>
 
              {/* Investments */}
-             <div className="card-premium p-5 bg-white border border-slate-200 flex flex-col justify-start">
+             <div className="card-premium p-5 bg-white border border-slate-200 rounded-xl flex flex-col justify-start shadow-sm">
                 <label className="font-bold text-slate-700 flex items-center gap-2">📈 Investments</label>
                 <p className="text-xs text-slate-400 mb-3">Total Portfolio Value</p>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">{currency}</span>
-                  <input type="number" className="input-modern pl-12 text-xl font-bold text-slate-800" placeholder="0"
-                    value={wealth.investments || ''} onChange={(e) => setWealthValue('investments', parseFloat(e.target.value))} />
+                  <span className="absolute left-1 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">{currency}</span>
+                  <input 
+                    type="number" 
+                    inputMode="decimal"
+                    className="input-modern w-full pl-10 py-2 border rounded-lg text-lg font-bold text-slate-800 outline-none focus:border-indigo-500" 
+                    placeholder="0"
+                    value={wealth.investments || ''} onChange={(e) => setWealthValue('investments', parseFloat(e.target.value))} 
+                  />
                 </div>
              </div>
           </div>
 
-          {/* Goals Input */}
-          <div className="card-premium bg-white border border-slate-200 overflow-hidden">
+          {/* Goals Input - Stacked on Mobile */}
+          <div className="card-premium bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
              <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
                 <h3 className="font-bold text-slate-700">🏆 Saving Targets</h3>
-                <button onClick={addGoal} className="text-xs bg-white border border-slate-300 hover:border-indigo-500 hover:text-indigo-600 px-3 py-1 rounded-md font-medium transition-colors">+ New Goal</button>
+                <button onClick={addGoal} className="text-xs bg-white border border-slate-300 hover:border-indigo-500 hover:text-indigo-600 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm">+ New Goal</button>
              </div>
              <div className="divide-y divide-slate-100">
                 {(wealth.goals || []).map((g: any) => (
                   <div key={g.id} className="p-4 grid grid-cols-12 gap-3 items-center hover:bg-slate-50 transition-colors">
-                     <div className="col-span-12 md:col-span-5">
-                        <input type="text" placeholder="Goal Name (e.g. Wedding)" className="input-modern text-sm py-2 w-full" 
-                           value={g.name} onChange={(e) => updateGoal(g.id, 'name', e.target.value)} />
-                     </div>
-                     <div className="col-span-5 md:col-span-3 relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">{currency}</span>
-                        <input type="number" placeholder="Have" className="input-modern pl-8 text-sm py-2 w-full text-right" 
-                           value={g.current || ''} onChange={(e) => updateGoal(g.id, 'current', parseFloat(e.target.value))} />
-                     </div>
-                     <div className="col-span-5 md:col-span-3 relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">{currency}</span>
-                        <input type="number" placeholder="Target" className="input-modern pl-8 text-sm py-2 w-full text-right" 
-                           value={g.target || ''} onChange={(e) => updateGoal(g.id, 'target', parseFloat(e.target.value))} />
-                     </div>
-                     <div className="col-span-2 md:col-span-1 text-right">
-                        <button onClick={() => {
-                           const newGoals = wealth.goals.filter((x: any) => x.id !== g.id);
-                           update({ assets: { ...wealth, goals: newGoals } });
-                        }} className="text-slate-300 hover:text-red-500 p-2">&times;</button>
-                     </div>
+                      {/* Name - Full width on mobile */}
+                      <div className="col-span-12 md:col-span-5">
+                         <input 
+                           type="text" 
+                           placeholder="Goal Name (e.g. Wedding)" 
+                           className="input-modern text-sm py-2 w-full bg-transparent outline-none font-medium placeholder-slate-400" 
+                           value={g.name} 
+                           onChange={(e) => updateGoal(g.id, 'name', e.target.value)} 
+                         />
+                      </div>
+                      
+                      {/* Numbers - Split on mobile */}
+                      <div className="col-span-5 md:col-span-3 relative">
+                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none">{currency}</span>
+                         <input 
+                           type="number" 
+                           inputMode="decimal"
+                           placeholder="Have" 
+                           className="input-modern pl-6 text-sm py-2 w-full text-right bg-slate-50 rounded border-slate-200 focus:bg-white transition-colors outline-none" 
+                           value={g.current || ''} 
+                           onChange={(e) => updateGoal(g.id, 'current', parseFloat(e.target.value))} 
+                         />
+                      </div>
+                      <div className="col-span-5 md:col-span-3 relative">
+                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none">{currency}</span>
+                         <input 
+                           type="number" 
+                           inputMode="decimal"
+                           placeholder="Target" 
+                           className="input-modern pl-6 text-sm py-2 w-full text-right bg-slate-50 rounded border-slate-200 focus:bg-white transition-colors outline-none" 
+                           value={g.target || ''} 
+                           onChange={(e) => updateGoal(g.id, 'target', parseFloat(e.target.value))} 
+                         />
+                      </div>
+                      
+                      {/* Delete */}
+                      <div className="col-span-2 md:col-span-1 text-right">
+                         <button onClick={() => {
+                            const newGoals = wealth.goals.filter((x: any) => x.id !== g.id);
+                            update({ assets: { ...wealth, goals: newGoals } });
+                         }} className="text-slate-300 hover:text-red-500 p-2 text-xl leading-none">&times;</button>
+                      </div>
                   </div>
                 ))}
+                {(wealth.goals || []).length === 0 && (
+                    <div className="p-6 text-center text-slate-400 text-sm italic">Add a goal to track your progress.</div>
+                )}
              </div>
           </div>
         </div>
@@ -299,18 +344,27 @@ export default function BudgetApp() {
 
       {/* RIGHT COLUMN */}
       <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
-        <div className="card-premium bg-white p-6 rounded-2xl border border-slate-200">
+        <div className="card-premium bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
            <BudgetVisuals 
-              data={(Object.keys(CONFIG) as CategoryKey[]).map(key => ({ name: CONFIG[key].title, value: getSum(key), color: CONFIG[key].hex }))} 
-              totalIncome={income} currency={currency} 
+             data={(Object.keys(CONFIG) as CategoryKey[]).map(key => ({ name: CONFIG[key].title, value: getSum(key), color: CONFIG[key].hex }))} 
+             totalIncome={income} currency={currency} 
            />
         </div>
-        <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-2xl relative overflow-hidden">
-           <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500 rounded-full opacity-20 blur-xl"></div>
-           <h3 className="text-2xl font-bold relative z-10">Ready to Review?</h3>
-           <p className="text-slate-400 mb-6 relative z-10 text-sm">{unallocated < 0 ? "⚠️ You are over budget." : "Your plan is ready to view."}</p>
-           <a href="/guide" className="block w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold py-3 px-4 rounded-lg text-center transition-colors relative z-10 shadow-lg shadow-indigo-500/30">View Guide & Automation &rarr;</a>
-        </div>
+        <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500 rounded-full opacity-20 blur-xl"></div>
+          <h3 className="text-2xl font-bold relative z-10">Ready to Review?</h3>
+          <p className="text-slate-400 mb-6 relative z-10 text-sm">
+              {unallocated < 0 ? "⚠️ You are over budget." : "View your financial blueprint."}
+          </p>
+          
+          {/* CHANGE THIS LINK */}
+          <a 
+            href="/plan" 
+            className="block w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold py-3 px-4 rounded-xl text-center transition-colors relative z-10 shadow-lg shadow-indigo-500/30 active:scale-95"
+          >
+              View Blueprint & PDF &rarr;
+          </a>
+      </div>
       </div>
     </div>
   );

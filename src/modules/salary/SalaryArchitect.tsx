@@ -14,7 +14,6 @@ type LineItem = {
   value: number;
 };
 
-// This Object can be moved to a separate 'tax_regimes.json' file later
 const COUNTRY_CONFIG: Record<CountryCode, { 
   name: string; currency: string; flag: string; defaults: LineItem[];
 }> = {
@@ -59,13 +58,12 @@ export default function SalaryArchitect() {
   const [country, setCountry] = useState<CountryCode>('USA');
   
   // Inputs
-  const [inputValue, setInputValue] = useState<number>(0); // Holds either Gross or Target Net depending on mode
+  const [inputValue, setInputValue] = useState<number>(0); 
   const [items, setItems] = useState<LineItem[]>([]);
 
   // Init Data
   useEffect(() => {
     if (loaded) {
-      // Default to loading Gross if available, otherwise 0
       if (data.ctc > 0) setInputValue(data.ctc);
       setItems(COUNTRY_CONFIG[country].defaults);
     }
@@ -81,19 +79,15 @@ export default function SalaryArchitect() {
     let netAnnual = 0;
     
     if (mode === 'forward') {
-      // Input is Gross -> Find Net
       grossAnnual = inputValue;
       const percentDeductionAmount = grossAnnual * (totalPercent / 100);
       const totalDeductionAmount = percentDeductionAmount + totalFixedAnnual;
       netAnnual = Math.max(0, grossAnnual - totalDeductionAmount);
     } else {
-      // Input is Target Net (Monthly) -> Find Gross
-      // Formula: Gross = (Net + Fixed) / (1 - %)
       const targetNetAnnual = inputValue * 12;
       const retentionRate = 1 - (totalPercent / 100);
       
       if (retentionRate <= 0) {
-        // Guard against >100% tax
         grossAnnual = 0; 
       } else {
         grossAnnual = (targetNetAnnual + totalFixedAnnual) / retentionRate;
@@ -105,7 +99,7 @@ export default function SalaryArchitect() {
     const monthlyNet = netAnnual / 12;
     const totalDeductionsMonthly = monthlyGross - monthlyNet;
 
-    // Granular Breakdown for Display
+    // Granular Breakdown
     const breakdown = items.map(item => {
       let amount = 0;
       if (item.mode === 'fixed') amount = item.value;
@@ -151,7 +145,6 @@ export default function SalaryArchitect() {
     alert(`✅ Updated Budget Income to ${currency}${Math.round(results.monthlyNet).toLocaleString()}`);
   };
 
-  // Switch Modes (Reset input if needed or convert? For now, we clean reset to avoid confusion)
   const handleModeSwitch = (newMode: Mode) => {
     setMode(newMode);
     setInputValue(0); 
@@ -159,7 +152,6 @@ export default function SalaryArchitect() {
 
   if (!loaded) return null;
 
-  // Chart Data
   const chartData = [
     { name: 'Gross', value: results.monthlyGross, color: '#94A3B8' }, 
     { name: 'Deductions', value: results.totalDeductionsMonthly, color: '#F87171' },
@@ -167,26 +159,26 @@ export default function SalaryArchitect() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-20">
+    <div className="max-w-5xl mx-auto space-y-8 pb-20 px-4 sm:px-6">
       
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Salary Architect</h1>
-        <p className="text-slate-500">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Salary Architect</h1>
+        <p className="text-slate-500 text-sm sm:text-base">
             {mode === 'forward' ? 'Analyze your offer.' : 'Reverse-engineer your negotiation.'}
         </p>
         
         {/* Mode Switcher */}
-        <div className="inline-flex bg-slate-100 p-1 rounded-xl">
+        <div className="flex flex-col sm:flex-row bg-slate-100 p-1 rounded-xl max-w-md mx-auto">
            <button 
              onClick={() => handleModeSwitch('forward')}
-             className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'forward' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+             className={`w-full px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'forward' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
            >
              Calculate In-Hand
            </button>
            <button 
              onClick={() => handleModeSwitch('reverse')}
-             className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'reverse' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+             className={`w-full px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'reverse' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
            >
              Calculate Required CTC
            </button>
@@ -195,11 +187,11 @@ export default function SalaryArchitect() {
 
       {/* Country Selector */}
       <div className="flex justify-center">
-        <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-200 inline-flex gap-1">
+        <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-center gap-1">
           {(Object.keys(COUNTRY_CONFIG) as CountryCode[]).map(c => (
             <button
               key={c} onClick={() => setCountry(c)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${country === c ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:bg-slate-50'}`}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${country === c ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:bg-slate-50'}`}
             >
               <span>{COUNTRY_CONFIG[c].flag}</span><span>{COUNTRY_CONFIG[c].name}</span>
             </button>
@@ -207,7 +199,7 @@ export default function SalaryArchitect() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT COLUMN: INPUTS */}
         <div className="lg:col-span-7 space-y-6">
@@ -216,48 +208,65 @@ export default function SalaryArchitect() {
             <label className={`text-xs font-bold uppercase tracking-widest ${mode === 'forward' ? 'text-slate-400' : 'text-indigo-400'}`}>
                 {mode === 'forward' ? 'Annual CTC / Gross Salary' : 'Target Monthly In-Hand'}
             </label>
-            <div className="flex items-center text-4xl font-bold text-slate-800 mt-2 relative">
+            <div className="flex items-center text-3xl sm:text-4xl font-bold text-slate-800 mt-2 relative">
                <span className="text-slate-300 mr-2">{currency}</span>
                <input 
-                 type="number" placeholder="0" className="w-full bg-transparent outline-none"
-                 value={inputValue || ''} onChange={(e) => setInputValue(parseFloat(e.target.value))}
+                 type="number" 
+                 inputMode="decimal" 
+                 pattern="[0-9]*" 
+                 placeholder="0" 
+                 className="w-full bg-transparent outline-none"
+                 value={inputValue || ''} 
+                 onChange={(e) => setInputValue(parseFloat(e.target.value))}
                />
             </div>
             {mode === 'forward' && <div className="mt-2 text-sm font-mono text-slate-400">= {currency}{Math.round(inputValue / 12).toLocaleString()} / month</div>}
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-             <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+             <div className="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex justify-between items-center">
                 <h3 className="font-bold text-slate-700">Deduction Stack</h3>
                 <button onClick={addItem} className="text-xs bg-white border border-slate-300 px-3 py-1 rounded hover:border-indigo-500 hover:text-indigo-600 font-medium transition-colors">+ Add Item</button>
              </div>
              
-             {/* Unified List for Both Modes */}
+             {/* Unified List */}
              <div className="divide-y divide-slate-100">
                 {items.map((item) => (
-                  <div key={item.id} className="p-4 flex items-center gap-3 hover:bg-slate-50 transition-colors">
-                     <input 
-                       type="text" className="flex-1 font-medium text-slate-700 bg-transparent outline-none text-sm"
-                       value={item.name} onChange={(e) => updateItem(item.id, 'name', e.target.value)}
-                     />
-                     <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-transparent focus-within:border-indigo-500 focus-within:bg-white transition-all">
-                        <button onClick={() => toggleModeLogic(item.id)} className="px-2 py-1 text-[10px] font-bold uppercase rounded hover:bg-slate-200 text-slate-500 w-8">
-                            {item.mode === 'percent' ? '%' : currency}
-                        </button>
-                        <input 
-                          type="number" className="w-20 bg-transparent outline-none text-right text-sm font-mono font-bold text-slate-700 pr-2"
-                          value={item.value} onChange={(e) => updateItem(item.id, 'value', parseFloat(e.target.value))}
-                        />
-                     </div>
-                     <div className="w-24 text-right flex flex-col justify-center">
-                        <span className="text-xs text-red-500 font-mono font-bold">-{currency}{Math.round(results.breakdown.find(x => x.id === item.id)?.amount || 0).toLocaleString()}</span>
-                        <span className="text-[10px] text-slate-400">
-                            {item.mode === 'percent' 
-                                ? 'of monthly' 
-                                : `${results.monthlyGross > 0 ? ((item.value/results.monthlyGross)*100).toFixed(1) : 0}%`}
-                        </span>
-                     </div>
-                     <button onClick={() => deleteItem(item.id)} className="text-slate-300 hover:text-red-500 px-1">&times;</button>
+                  <div key={item.id} className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3 hover:bg-slate-50 transition-colors">
+                      {/* Name Input - Flex Grow to take available space */}
+                      <input 
+                        type="text" 
+                        className="flex-1 min-w-[100px] font-medium text-slate-700 bg-transparent outline-none text-sm sm:text-base"
+                        value={item.name} 
+                        onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                      />
+                      
+                      {/* Toggle & Value Input - Fixed/Shrink */}
+                      <div className="flex items-center shrink-0 bg-slate-100 rounded-lg p-1 border border-transparent focus-within:border-indigo-500 focus-within:bg-white transition-all">
+                         <button onClick={() => toggleModeLogic(item.id)} className="px-2 py-1 text-[10px] font-bold uppercase rounded hover:bg-slate-200 text-slate-500 w-8">
+                             {item.mode === 'percent' ? '%' : currency}
+                         </button>
+                         <input 
+                           type="number"
+                           inputMode="decimal"
+                           className="w-16 sm:w-20 bg-transparent outline-none text-right text-sm font-mono font-bold text-slate-700 pr-2"
+                           value={item.value} 
+                           onChange={(e) => updateItem(item.id, 'value', parseFloat(e.target.value))}
+                         />
+                      </div>
+                      
+                      {/* Result Display - Hidden on very small screens if needed, or condensed */}
+                      <div className="w-16 sm:w-24 text-right flex flex-col justify-center shrink-0">
+                         <span className="text-xs text-red-500 font-mono font-bold">-{currency}{Math.round(results.breakdown.find(x => x.id === item.id)?.amount || 0).toLocaleString()}</span>
+                         <span className="text-[10px] text-slate-400 hidden sm:inline">
+                             {item.mode === 'percent' 
+                                 ? 'of monthly' 
+                                 : `${results.monthlyGross > 0 ? ((item.value/results.monthlyGross)*100).toFixed(1) : 0}%`}
+                         </span>
+                      </div>
+                      
+                      {/* Delete Button */}
+                      <button onClick={() => deleteItem(item.id)} className="shrink-0 text-slate-300 hover:text-red-500 px-1 text-xl leading-none">&times;</button>
                   </div>
                 ))}
              </div>
@@ -267,31 +276,31 @@ export default function SalaryArchitect() {
         {/* RIGHT COLUMN: RESULTS */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
            
-           <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-xl relative overflow-hidden">
+           <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-indigo-500 rounded-full opacity-20 blur-3xl"></div>
               <div className="relative z-10 text-center">
                  {mode === 'forward' ? (
                     <>
-                        <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Monthly In-Hand</p>
-                        <div className="text-5xl font-extrabold tracking-tight mb-2">{currency}{Math.round(results.monthlyNet).toLocaleString()}</div>
+                        <p className="text-slate-400 text-xs sm:text-sm font-bold uppercase tracking-widest mb-2">Monthly In-Hand</p>
+                        <div className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 break-all">{currency}{Math.round(results.monthlyNet).toLocaleString()}</div>
                         <p className="text-indigo-300 text-sm">Net Annual: {currency}{Math.round(results.monthlyNet * 12).toLocaleString()}</p>
                     </>
                  ) : (
                     <>
-                        <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Required CTC / Gross</p>
-                        <div className="text-5xl font-extrabold tracking-tight mb-2">{currency}{Math.round(results.grossAnnual).toLocaleString()}</div>
+                        <p className="text-slate-400 text-xs sm:text-sm font-bold uppercase tracking-widest mb-2">Required CTC / Gross</p>
+                        <div className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 break-all">{currency}{Math.round(results.grossAnnual).toLocaleString()}</div>
                         <p className="text-indigo-300 text-sm">To get {currency}{inputValue.toLocaleString()} / mo</p>
                     </>
                  )}
 
                  <div className="mt-8 grid grid-cols-2 gap-4 border-t border-slate-700 pt-6">
                     <div>
-                       <p className="text-slate-500 text-xs uppercase">Gross Monthly</p>
-                       <p className="font-mono font-bold text-lg">{currency}{Math.round(results.monthlyGross).toLocaleString()}</p>
+                       <p className="text-slate-500 text-[10px] sm:text-xs uppercase">Gross Monthly</p>
+                       <p className="font-mono font-bold text-base sm:text-lg">{currency}{Math.round(results.monthlyGross).toLocaleString()}</p>
                     </div>
                     <div>
-                       <p className="text-slate-500 text-xs uppercase">Total Deductions</p>
-                       <p className="font-mono font-bold text-lg text-red-400">-{currency}{Math.round(results.totalDeductionsMonthly).toLocaleString()}</p>
+                       <p className="text-slate-500 text-[10px] sm:text-xs uppercase">Total Deductions</p>
+                       <p className="font-mono font-bold text-base sm:text-lg text-red-400">-{currency}{Math.round(results.totalDeductionsMonthly).toLocaleString()}</p>
                     </div>
                  </div>
 
@@ -302,14 +311,14 @@ export default function SalaryArchitect() {
               </div>
            </div>
 
-           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+           <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
               <h3 className="font-bold text-slate-800 mb-4 text-center">Salary Waterfall</h3>
               <div className="h-64 w-full">
                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <BarChart data={chartData} margin={{ top: 20, right: 10, left: 10, bottom: 5 }}>
                        <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12}} />
-                       <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={60}>
+                       <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={50}>
                           {chartData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                        </Bar>
                     </BarChart>

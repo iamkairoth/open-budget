@@ -16,14 +16,13 @@ export default function WealthBuilder() {
 
   // --- LIFE BUILDER STATE (Standalone) ---
   const [currentPortfolio, setCurrentPortfolio] = useState<number>(0);
-  const [monthlyContribution, setMonthlyContribution] = useState<number>(0); // Standalone Input
+  const [monthlyContribution, setMonthlyContribution] = useState<number>(0); 
   const [returnRate, setReturnRate] = useState<number>(8);
   const [richLifeTarget, setRichLifeTarget] = useState<number>(1000000);
 
   // Init Data
   useEffect(() => {
     if (loaded) {
-      // Load Debts
       if (data.debts && data.debts.length > 0) {
         setDebts(data.debts);
       } else {
@@ -33,14 +32,8 @@ export default function WealthBuilder() {
         ]);
       }
 
-      // Load Wealth / Assets
       if (data.assets) {
         setCurrentPortfolio(data.assets.investments || 0);
-        // If we saved a specific contribution scenario, load it. 
-        // Otherwise, default to 0 (Standalone).
-        // We'll borrow the 'investments' field for initial portfolio, 
-        // but 'monthlyContribution' is now local/session based or needs a new home. 
-        // For now, we initialize it to 0 or 500 to let user play.
         setMonthlyContribution(500); 
       }
     }
@@ -51,7 +44,6 @@ export default function WealthBuilder() {
     if (loaded) {
       update({ 
         debts,
-        // We update the asset snapshot if user changes "Current Portfolio" here
         assets: { ...data.assets, investments: currentPortfolio } 
       });
     }
@@ -124,7 +116,6 @@ export default function WealthBuilder() {
         targetReached = true;
       }
 
-      // Compound Interest: (Balance * Rate) + (Contribution * 12)
       balance = (balance * (1 + returnRate / 100)) + (monthlyContribution * 12);
     }
     return { history, yearsToTarget };
@@ -140,7 +131,7 @@ export default function WealthBuilder() {
   if (!loaded) return null;
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8 pb-20">
+    <div className="grid lg:grid-cols-2 gap-8 pb-20 px-4 sm:px-6">
       
       {/* --- LEFT COLUMN: DEBT DESTROYER --- */}
       <div className="space-y-6">
@@ -149,7 +140,7 @@ export default function WealthBuilder() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
             </div>
             <div>
-                <h2 className="text-2xl font-bold text-slate-800">Debt Destroyer</h2>
+                <h2 className="text-2xl font-bold text-slate-800">Debt</h2>
                 <p className="text-slate-500 text-sm">Clear the past.</p>
             </div>
         </div>
@@ -158,33 +149,65 @@ export default function WealthBuilder() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                 <span className="font-bold text-slate-700 text-sm uppercase tracking-wide">Your Liabilities</span>
-                <button onClick={addDebt} className="text-xs bg-white border border-slate-300 px-2 py-1 rounded hover:border-indigo-500 hover:text-indigo-600">+ Add Debt</button>
+                <button onClick={addDebt} className="text-xs bg-white border border-slate-300 px-3 py-1.5 rounded-lg hover:border-indigo-500 hover:text-indigo-600 font-bold transition-colors">+ Add Debt</button>
             </div>
             <div className="divide-y divide-slate-100">
                 {debts.map(d => (
-                    <div key={d.id} className="p-4 grid grid-cols-12 gap-2 items-center">
-                        <div className="col-span-4">
-                            <label className="text-[10px] uppercase font-bold text-slate-400">Name</label>
-                            <input type="text" value={d.name} onChange={e => updateDebt(d.id, 'name', e.target.value)} className="w-full font-bold text-slate-700 bg-transparent outline-none" />
+                    // Responsive Grid: Stacked on mobile, 12-col on Desktop
+                    <div key={d.id} className="p-4 flex flex-col sm:grid sm:grid-cols-12 gap-3 sm:gap-2 items-start sm:items-center bg-white">
+                        
+                        {/* Name Field - Full width on mobile */}
+                        <div className="w-full sm:col-span-4">
+                            <label className="text-[10px] uppercase font-bold text-slate-400 block sm:hidden mb-1">Name</label>
+                            <input 
+                              type="text" 
+                              value={d.name} 
+                              onChange={e => updateDebt(d.id, 'name', e.target.value)} 
+                              className="w-full font-bold text-slate-700 bg-slate-50 sm:bg-transparent p-2 sm:p-0 rounded border sm:border-none border-slate-200 outline-none focus:bg-white focus:border-indigo-500 transition-all" 
+                            />
                         </div>
-                        <div className="col-span-3">
-                            <label className="text-[10px] uppercase font-bold text-slate-400">Balance</label>
-                            <input type="number" value={d.balance} onChange={e => updateDebt(d.id, 'balance', parseFloat(e.target.value))} className="w-full text-slate-700 bg-transparent outline-none" />
+
+                        {/* Numeric Fields Wrapper for Mobile Grid */}
+                        <div className="w-full sm:col-span-7 grid grid-cols-3 gap-3 sm:contents">
+                            <div className="sm:col-span-3">
+                                <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Balance</label>
+                                <input 
+                                  type="number" 
+                                  inputMode="decimal"
+                                  value={d.balance} 
+                                  onChange={e => updateDebt(d.id, 'balance', parseFloat(e.target.value))} 
+                                  className="w-full text-slate-700 bg-transparent border-b border-slate-200 focus:border-indigo-500 outline-none py-1" 
+                                />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">APR %</label>
+                                <input 
+                                  type="number" 
+                                  inputMode="decimal"
+                                  value={d.rate} 
+                                  onChange={e => updateDebt(d.id, 'rate', parseFloat(e.target.value))} 
+                                  className="w-full text-slate-700 bg-transparent border-b border-slate-200 focus:border-indigo-500 outline-none py-1" 
+                                />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Min Pay</label>
+                                <input 
+                                  type="number" 
+                                  inputMode="decimal"
+                                  value={d.minPayment} 
+                                  onChange={e => updateDebt(d.id, 'minPayment', parseFloat(e.target.value))} 
+                                  className="w-full text-slate-700 bg-transparent border-b border-slate-200 focus:border-indigo-500 outline-none py-1" 
+                                />
+                            </div>
                         </div>
-                        <div className="col-span-2">
-                            <label className="text-[10px] uppercase font-bold text-slate-400">APR %</label>
-                            <input type="number" value={d.rate} onChange={e => updateDebt(d.id, 'rate', parseFloat(e.target.value))} className="w-full text-slate-700 bg-transparent outline-none" />
-                        </div>
-                        <div className="col-span-2">
-                            <label className="text-[10px] uppercase font-bold text-slate-400">Min Pay</label>
-                            <input type="number" value={d.minPayment} onChange={e => updateDebt(d.id, 'minPayment', parseFloat(e.target.value))} className="w-full text-slate-700 bg-transparent outline-none" />
-                        </div>
-                        <div className="col-span-1 text-right">
-                             <button onClick={() => removeDebt(d.id)} className="text-slate-300 hover:text-red-500">&times;</button>
+
+                        {/* Delete Button */}
+                        <div className="sm:col-span-1 absolute sm:relative top-4 right-4 sm:top-auto sm:right-auto">
+                             <button onClick={() => removeDebt(d.id)} className="text-slate-300 hover:text-red-500 p-1 text-xl leading-none">&times;</button>
                         </div>
                     </div>
                 ))}
-                {debts.length === 0 && <div className="p-6 text-center text-slate-400 italic">No debts! You are free! 🎉</div>}
+                {debts.length === 0 && <div className="p-8 text-center text-slate-400 italic">No debts! You are free! 🎉</div>}
             </div>
         </div>
 
@@ -192,14 +215,14 @@ export default function WealthBuilder() {
         {debts.length > 0 && (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
                 
-                <div className="flex justify-center bg-slate-100 p-1 rounded-lg">
-                    <button onClick={() => setStrategy('avalanche')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${strategy === 'avalanche' ? 'bg-white shadow text-indigo-600' : 'text-slate-500'}`}>Avalanche (High Interest)</button>
-                    <button onClick={() => setStrategy('snowball')} className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${strategy === 'snowball' ? 'bg-white shadow text-indigo-600' : 'text-slate-500'}`}>Snowball (Low Balance)</button>
+                <div className="flex flex-col sm:flex-row justify-center bg-slate-100 p-1 rounded-xl gap-1">
+                    <button onClick={() => setStrategy('avalanche')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${strategy === 'avalanche' ? 'bg-white shadow text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Avalanche (High APR)</button>
+                    <button onClick={() => setStrategy('snowball')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${strategy === 'snowball' ? 'bg-white shadow text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Snowball (Low Bal)</button>
                 </div>
 
                 <div>
                     <div className="flex justify-between mb-2">
-                        <span className="font-bold text-slate-700">Extra Monthly Payment</span>
+                        <span className="font-bold text-slate-700 text-sm sm:text-base">Extra Monthly Payment</span>
                         <span className="font-mono font-bold text-green-600">{data.currency}{extraPayment}</span>
                     </div>
                     <input 
@@ -211,16 +234,16 @@ export default function WealthBuilder() {
 
                 <div className="bg-slate-800 text-white rounded-xl p-5 flex justify-between items-center">
                     <div>
-                        <p className="text-slate-400 text-xs uppercase font-bold">Debt Free Date</p>
-                        <p className="text-2xl font-bold">{debtFreeDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+                        <p className="text-slate-400 text-[10px] uppercase font-bold">Debt Free Date</p>
+                        <p className="text-xl sm:text-2xl font-bold">{debtFreeDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-slate-400 text-xs uppercase font-bold">Time Saved</p>
-                        <p className="text-xl font-bold text-green-400">{debtResult.months < 360 ? `${debtResult.months} months` : '> 30 Years'}</p>
+                        <p className="text-slate-400 text-[10px] uppercase font-bold">Time Saved</p>
+                        <p className="text-lg sm:text-xl font-bold text-green-400">{debtResult.months < 360 ? `${debtResult.months} months` : '> 30 Years'}</p>
                     </div>
                 </div>
 
-                <div className="h-40 w-full">
+                <div className="h-48 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={debtResult.history}>
                              <defs>
@@ -230,7 +253,7 @@ export default function WealthBuilder() {
                                 </linearGradient>
                             </defs>
                             <XAxis dataKey="month" hide />
-                            <Tooltip />
+                            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
                             <Area type="monotone" dataKey="balance" stroke="#F87171" fillOpacity={1} fill="url(#colorDebt)" />
                         </AreaChart>
                     </ResponsiveContainer>
@@ -246,7 +269,7 @@ export default function WealthBuilder() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
             </div>
             <div>
-                <h2 className="text-2xl font-bold text-slate-800">Life Builder</h2>
+                <h2 className="text-2xl font-bold text-slate-800">Invest</h2>
                 <p className="text-slate-500 text-sm">Simulate your future wealth.</p>
             </div>
         </div>
@@ -254,13 +277,14 @@ export default function WealthBuilder() {
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
             
             {/* STANDALONE INPUTS */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 transition-colors focus-within:bg-white focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20">
                     <label className="text-xs text-slate-400 font-bold uppercase block mb-1">Monthly Investment</label>
                     <div className="relative">
                         <span className="absolute left-0 text-slate-400 font-bold">{data.currency}</span>
                         <input 
                             type="number" 
+                            inputMode="decimal"
                             className="w-full pl-4 bg-transparent outline-none font-bold text-xl text-slate-800"
                             value={monthlyContribution}
                             onChange={(e) => setMonthlyContribution(parseFloat(e.target.value))}
@@ -274,6 +298,7 @@ export default function WealthBuilder() {
                         <span className="absolute left-0 text-slate-400 font-bold">{data.currency}</span>
                         <input 
                             type="number" 
+                            inputMode="decimal"
                             className="w-full pl-4 bg-transparent outline-none font-bold text-xl text-slate-800"
                             value={currentPortfolio}
                             onChange={(e) => setCurrentPortfolio(parseFloat(e.target.value))}
@@ -304,8 +329,9 @@ export default function WealthBuilder() {
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">{data.currency}</span>
                     <input 
                         type="number" 
+                        inputMode="decimal"
                         value={richLifeTarget} onChange={e => setRichLifeTarget(parseFloat(e.target.value))}
-                        className="w-full pl-8 py-2 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-800 focus:outline-none focus:border-indigo-500"
+                        className="w-full pl-8 py-3 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-800 focus:outline-none focus:border-indigo-500"
                     />
                  </div>
             </div>
@@ -322,14 +348,14 @@ export default function WealthBuilder() {
                         </defs>
                         <XAxis dataKey="year" style={{ fontSize: '12px' }} tickMargin={10} />
                         <YAxis hide />
-                        <Tooltip formatter={(val: number) => `${data.currency}${val.toLocaleString()}`} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} formatter={(val: number) => `${data.currency}${val.toLocaleString()}`} />
                         <Area type="monotone" dataKey="amount" stroke="#4ADE80" strokeWidth={2} fillOpacity={1} fill="url(#colorGrowth)" />
                     </AreaChart>
                  </ResponsiveContainer>
                  
                  {/* Milestone Badge */}
                  {growthResult.yearsToTarget > 0 && (
-                     <div className="absolute top-4 left-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-in fade-in zoom-in">
+                     <div className="absolute top-0 left-0 sm:top-4 sm:left-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-lg">
                         Hit Target in {growthResult.yearsToTarget} Years 🚀
                      </div>
                  )}
@@ -339,11 +365,11 @@ export default function WealthBuilder() {
             <div className="grid grid-cols-2 gap-4 text-center border-t border-slate-100 pt-4">
                 <div>
                     <p className="text-xs text-slate-400 uppercase tracking-wide">In 10 Years</p>
-                    <p className="font-bold text-lg text-slate-800">{data.currency}{growthResult.history[10]?.amount.toLocaleString()}</p>
+                    <p className="font-bold text-base sm:text-lg text-slate-800">{data.currency}{growthResult.history[10]?.amount.toLocaleString()}</p>
                 </div>
                 <div>
                     <p className="text-xs text-slate-400 uppercase tracking-wide">In 20 Years</p>
-                    <p className="font-bold text-lg text-slate-800">{data.currency}{growthResult.history[20]?.amount.toLocaleString()}</p>
+                    <p className="font-bold text-base sm:text-lg text-slate-800">{data.currency}{growthResult.history[20]?.amount.toLocaleString()}</p>
                 </div>
             </div>
 

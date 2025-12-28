@@ -1,4 +1,3 @@
-// src/components/react/BudgetVisuals.tsx
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
@@ -12,7 +11,7 @@ type VisualProps = {
 const CustomTooltip = ({ active, payload, currency }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 border border-slate-100 shadow-xl rounded-lg text-sm z-50">
+      <div className="bg-white p-3 border border-slate-100 shadow-xl rounded-lg text-sm z-50 relative">
         <p className="font-bold text-slate-700">{payload[0].name}</p>
         <p className="text-indigo-600 font-mono">
           {currency}{payload[0].value.toLocaleString()}
@@ -28,7 +27,6 @@ export default function BudgetVisuals({ data, totalIncome, currency }: VisualPro
   const activeData = data.filter(d => d.value > 0);
 
   // Calculate specific danger metrics
-  // Note: We check against the raw 'data' here to ensure calculation works even if value is 0
   const fixedCosts = data.find(d => d.name.includes("Fixed") || d.name.includes("Needs") || d.name.includes("Necessities"))?.value || 0;
   const fixedRatio = totalIncome > 0 ? (fixedCosts / totalIncome) * 100 : 0;
   
@@ -43,8 +41,8 @@ export default function BudgetVisuals({ data, totalIncome, currency }: VisualPro
           <PieChart margin={{ top: 0, left: 0, right: 0, bottom: 0 }}>
             <Pie
               data={activeData}
-              innerRadius={55} // Reduced to prevent overflow
-              outerRadius={75} // Reduced to prevent overflow
+              innerRadius={50} // Slightly smaller for mobile safety
+              outerRadius={70} 
               paddingAngle={4}
               dataKey="value"
             >
@@ -52,9 +50,8 @@ export default function BudgetVisuals({ data, totalIncome, currency }: VisualPro
                 <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
               ))}
             </Pie>
-            {/* Pass currency to the tooltip */}
             <Tooltip content={<CustomTooltip currency={currency} />} />
-            <Legend verticalAlign="bottom" height={36} iconType="circle" />
+            <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
           </PieChart>
         </ResponsiveContainer>
         

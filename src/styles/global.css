@@ -2,7 +2,6 @@
 @import "tailwindcss";
 
 @layer base {
-  /* Apply the fonts we loaded */
   :root {
     --font-body: 'Inter', sans-serif;
     --font-heading: 'Plus Jakarta Sans', sans-serif;
@@ -10,27 +9,45 @@
 
   body {
     font-family: var(--font-body);
+    /* Removed @apply to prevent v4 build errors. 
+       We will add these classes directly to Layout.astro */
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.025em; /* Tighter tracking for headings looks modern */
+    letter-spacing: -0.025em; 
   }
 }
 
 @layer utilities {
-  /* A nice card effect with a subtle lift on hover */
+  /* Hides scrollbar but allows scrolling */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Premium Card Effect */
   .card-premium {
-    @apply bg-white border border-slate-200 rounded-xl shadow-sm transition-all duration-200 ease-in-out;
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm transition-all duration-200 ease-in-out;
   }
   
   .card-premium:hover {
-    @apply shadow-md border-indigo-100 -translate-y-0.5;
+    @apply shadow-md border-indigo-200 -translate-y-0.5;
   }
 
-  /* Clean Input Fields */
+  /* Modern Inputs */
   .input-modern {
-    @apply w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 
-    outline-none ring-offset-2 transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500;
+    @apply w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 
+    outline-none ring-offset-0 transition-all duration-200 
+    placeholder:text-slate-400
+    focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500;
+  }
+
+  /* Safe Area for iPhone Home Bar */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
